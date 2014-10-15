@@ -47,6 +47,7 @@ parsePixivIllustDataDef = (url) ->
       img = window.document.querySelector(".img-container img")
       h1 = window.document.querySelector(".userdata h1.title")
       cap = window.document.querySelector("#caption_long")
+      console.log(img, h1, cap)
       illustData = {
           url: url,
           title: h1.innerHTML,
