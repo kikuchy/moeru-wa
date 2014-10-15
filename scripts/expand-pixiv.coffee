@@ -19,7 +19,7 @@ module.exports = (robot) ->
   robot.hear /(http:\/\/www\.pixiv\.net\/member_illust\.php\?mode=medium&illust_id=\d+)/i, (msg) ->
     url = extractSingleUrl(msg.match[1])
     parsePixivIllustDataDef(url).then((illustData) ->
-      dlStream = downloadPixivImageDef(illustData)
+      dlStream = downloadPixivImage(illustData)
       postImageToSlack(illustData, dlStream)
       msg.send "モエルーワ！"
     )
@@ -47,7 +47,6 @@ parsePixivIllustDataDef = (url) ->
       img = window.document.querySelector(".img-container img")
       h1 = window.document.querySelector(".userdata h1.title")
       cap = window.document.querySelector("div.caption")
-      console.log(img, h1, cap)
       illustData = {
           url: url,
           title: h1.innerHTML,
