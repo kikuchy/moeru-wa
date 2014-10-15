@@ -11,8 +11,6 @@ domain = "alt-twitter"
 token = "hoge"
 
 deferred = require('deferred')
-Slack = require("node-slack")
-slackClient = new Slack(domain, token)
 jsdom = require("jsdom")
 request = require("request")
 fs = require("fs")
