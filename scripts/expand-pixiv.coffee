@@ -46,7 +46,7 @@ parsePixivIllustDataDef = (url) ->
         ret.reject(errors)
       img = window.document.querySelector(".img-container img")
       h1 = window.document.querySelector(".userdata h1.title")
-      cap = window.document.querySelector("#caption_long")
+      cap = window.document.querySelector("div.caption")
       console.log(img, h1, cap)
       illustData = {
           url: url,
