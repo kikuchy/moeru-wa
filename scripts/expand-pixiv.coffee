@@ -16,11 +16,11 @@ request = require("request")
 fs = require("fs")
 
 module.exports = (robot) ->
-  robot.respond /(http:\/\/www\.pixiv\.net\/member_illust\.php\?mode=medium&illust_id=\d+)/i, (msg) ->
+  robot.hear /(http:\/\/www\.pixiv\.net\/member_illust\.php\?mode=medium&illust_id=\d+)/i, (msg) ->
     url = extractSingleUrl(msg.match[1])
     parsePixivIllustDataDef(url).then((illustData) ->
-      tmpFilename = downloadPixivImage(illustData)
-      postImageToSlack(illustData, tmpFilename)
+      dlStream = downloadPixivImageDef(illustData)
+      postImageToSlack(illustData, dlStream)
       msg.send "モエルーワ！"
     )
 
@@ -67,17 +67,18 @@ downloadPixivImage = (illustData) ->
     }
   }
   filepath = "/tmp/" + parseFilenameFromUrl(illustData.imgUrl)
-  request(opt).pipe(fs.createWriteStream(filepath))
-  return filepath
+  request(opt)
 
-postImageToSlack = (illustData, tmpFilename) ->
+postImageToSlack = (illustData, dlStream) ->
   request.post({
     url: "https://slack.com/api/files.upload",
     formData: {
-      token: process.env.HUBOT_SLACK_TOKEN,
-      channel: "C02NK0E50",
+      token: process.env.HUBOT_SLACK_API_TOKEN,
+      channels: "C02NK0E50",
       initial_comment: illustData.caption,
       title: illustData.title,
-      file: fs.createReadStream(tmpFilename)
+      file: dlStream
     }
-  })
+  }, (err, resp, body) ->
+    console.log(body)
+  )
