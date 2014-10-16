@@ -7,9 +7,6 @@
 #   hubot time - Reply with current time
 #   hubot die - End hubot process
 
-domain = "alt-twitter"
-token = "hoge"
-
 deferred = require('deferred')
 jsdom = require("jsdom")
 request = require("request")
@@ -22,20 +19,14 @@ module.exports = (robot) ->
       dlStream = downloadPixivImage(illustData)
       postImageToSlack(illustData, dlStream)
       msg.send "モエルーワ！"
+    , (error) ->
+      msg.send "モエナカッターワ…"
+      console.error("作品の詳細情報の取得に失敗しました")
+      console.error(error)
     )
 
 extractSingleUrl = (text) ->
   text.match(/(https?|ftp)(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+)/)[0]
-
-parseIdFromPixivUrl = (url) ->
-  params = url.split("?")[1].split("&")
-  params.filter((p) ->
-    p.indexOf("illust_id") > -1
-  ).split("=")[1]
-
-parseFilenameFromUrl = (url) ->
-  idx = url.lastIndexOf("/")
-  url.substring(idx + 1)
 
 parsePixivIllustDataDef = (url) ->
   ret = deferred()
@@ -47,13 +38,14 @@ parsePixivIllustDataDef = (url) ->
       img = window.document.querySelector(".img-container img")
       h1 = window.document.querySelector(".userdata h1.title")
       cap = window.document.querySelector("div.caption")
+      if (!img || !h1 || !cap)
+        ret.reject("DOMの取得に失敗。HTMLが変更されていないか確認")
       illustData = {
           url: url,
           title: h1.innerHTML,
           imgUrl: img.src,
           caption: cap.innerHTML
       }
-      console.log(illustData)
       ret.resolve(illustData)
       window.close()
   })
@@ -66,7 +58,6 @@ downloadPixivImage = (illustData) ->
       Referer: illustData.url
     }
   }
-  filepath = "/tmp/" + parseFilenameFromUrl(illustData.imgUrl)
   request(opt)
 
 postImageToSlack = (illustData, dlStream) ->
@@ -80,5 +71,6 @@ postImageToSlack = (illustData, dlStream) ->
       file: dlStream
     }
   }, (err, resp, body) ->
-    console.log(body)
+    console.error("Slackへのファイルのアップロードに失敗")
+    console.error(err)
   )
