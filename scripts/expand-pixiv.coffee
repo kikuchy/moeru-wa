@@ -25,9 +25,19 @@ module.exports = (robot) ->
       console.error(error)
     )
 
+# 文字列中に初めて出現するURLを取り出して返します
+#
+# @param [String] text 任意の文字列
+#
 extractSingleUrl = (text) ->
   text.match(/(https?|ftp)(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+)/)[0]
 
+
+# pixivのイラストページURLから、そのイラストの情報を取り出して返します
+#
+# @param [String] url pixivのイラスト詳細ページのURL
+# @return [Object] ページURL, 画像サムネイルURL、イラストタイトル、イラストキャプションを含みます
+#
 parsePixivIllustDataDef = (url) ->
   ret = deferred()
   jsdom.env({
@@ -51,6 +61,10 @@ parsePixivIllustDataDef = (url) ->
   })
   ret.promise
 
+# イラスト画像のダウンロードを開始します
+#
+# @param [Object] pixivのイラスト情報
+# @return [ReadableStream] 画像のStream
 downloadPixivImage = (illustData) ->
   opt = {
     url: illustData.imgUrl
@@ -60,6 +74,11 @@ downloadPixivImage = (illustData) ->
   }
   request(opt)
 
+
+# Slackに画像を投稿します
+#
+# @param [Object] illustData イラストの情報
+# @param [ReadableStream] dlStream 画像のStream
 postImageToSlack = (illustData, dlStream) ->
   request.post({
     url: "https://slack.com/api/files.upload",
