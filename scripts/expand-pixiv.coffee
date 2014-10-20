@@ -13,7 +13,7 @@ request = require("request")
 fs = require("fs")
 
 module.exports = (robot) ->
-  robot.hear /(http:\/\/www\.pixiv\.net\/member_illust\.php\?mode=medium&illust_id=\d+)/i, (msg) ->
+  robot.hear /(http:\/\/www\.pixiv\.net\/member_illust\.php\?.*&?(mode=medium&illust_id=\d+|illust_id=\d+&mode=medium))/i, (msg) ->
     url = extractSingleUrl(msg.match[1])
     parsePixivIllustDataDef(url).then((illustData) ->
       dlStream = downloadPixivImage(illustData)
