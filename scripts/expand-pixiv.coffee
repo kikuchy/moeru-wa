@@ -18,6 +18,7 @@ module.exports = (robot) ->
     parsePixivIllustDataDef(url).then((illustData) ->
       dlStream = downloadPixivImage(illustData)
       if process.env.HUBOT_SLACK_API_TOKEN
+        console.log msg.room
         postImageToSlack(illustData, dlStream)
       msg.send "モエルーワ！"
     , (error) ->
@@ -91,6 +92,10 @@ postImageToSlack = (illustData, dlStream) ->
       file: dlStream
     }
   }, (err, resp, body) ->
-    console.error("Slackへのファイルのアップロードに失敗")
-    console.error(err)
+    if (error)
+      console.error("Slackへのファイルのアップロードに失敗")
+      console.error(err)
+      return
+    console.log("Slackへのファイルアップロードに成功")
+    console.log(illustData)
   )
