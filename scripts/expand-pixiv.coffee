@@ -44,8 +44,8 @@ parsePixivIllustDataDef = (url) ->
   ret = deferred()
   jsdom.env({
     url: url,
-    done: (errors, window) ->
-      if (errors)
+    done: (error, window) ->
+      if (error)
         ret.reject(errors)
       img = window.document.querySelector(".img-container img")
       h1 = window.document.querySelector(".userdata h1.title")
@@ -91,10 +91,10 @@ postImageToSlack = (illustData, dlStream) ->
       title: illustData.title,
       file: dlStream
     }
-  }, (err, resp, body) ->
+  }, (error, resp, body) ->
     if (error)
       console.error("Slackへのファイルのアップロードに失敗")
-      console.error(err)
+      console.error(error)
       return
     console.log("Slackへのファイルアップロードに成功")
     console.log(illustData)
