@@ -17,7 +17,8 @@ module.exports = (robot) ->
     url = extractSingleUrl(msg.match[1])
     parsePixivIllustDataDef(url).then((illustData) ->
       dlStream = downloadPixivImage(illustData)
-      postImageToSlack(illustData, dlStream)
+      if process.env.HUBOT_SLACK_API_TOKEN
+        postImageToSlack(illustData, dlStream)
       msg.send "モエルーワ！"
     , (error) ->
       msg.send "モエナカッターワ…"
@@ -47,14 +48,14 @@ parsePixivIllustDataDef = (url) ->
         ret.reject(errors)
       img = window.document.querySelector(".img-container img")
       h1 = window.document.querySelector(".userdata h1.title")
-      cap = window.document.querySelector("div.caption")
+      cap = window.document.querySelector("meta[property$=description]")
       if (!img || !h1 || !cap)
         ret.reject("DOMの取得に失敗。HTMLが変更されていないか確認")
       illustData = {
           url: url,
           title: h1.innerHTML,
           imgUrl: img.src,
-          caption: cap.innerHTML
+          caption: cap.content
       }
       ret.resolve(illustData)
       window.close()
