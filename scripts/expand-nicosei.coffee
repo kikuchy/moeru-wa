@@ -20,11 +20,23 @@ parseNicoSeiIllustDataDef = (url) ->
         done: (error, window) ->
             if error
                 ret.reject error
-            img = window.document.querySelector ".illust_view_big img"
-            title = window.document.title.split(" - ")[0]
-            ret.resolve
-                imgUrl: img.src
-                title: title
-                url: url
+            if window.location.href == url
+                # not redirected
+                img = window.document.querySelector ".illust_view_big img"
+                title = window.document.title.split(" - ")[0]
+                ret.resolve
+                    imgUrl: img.src
+                    title: title
+                    url: url
+            else
+                # Redilected
+                img = window.document.querySelector "#link_thumbnail_main img"
+                title = window.document.querySelector ".lg_ttl_illust h1"
+                caption = window.document.querySelector "meta[property$=description]"
+                ret.resolve
+                    imgUrl: img.src
+                    title: title.innerHTML
+                    url: url
+                    caption: caption.content
             window.close()
     ret.promise
