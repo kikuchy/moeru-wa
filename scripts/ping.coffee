@@ -10,10 +10,6 @@
 module.exports = (robot) ->
   robot.respond /PING$/i, (msg) ->
     msg.send "PONG"
-    msg.send msg.message.room
-    msg.send msg.envelope
-    msg.send msg.robot.adapter.channelMapping[msg.message.room]
-    console.log msg.robot
 
   robot.respond /ADAPTER$/i, (msg) ->
     msg.send robot.adapterName
