@@ -46,7 +46,7 @@ parsePixivIllustDataDef = (url) ->
     url: url,
     done: (error, window) ->
       if (error)
-        ret.reject(errors)
+        ret.reject(error)
       img = window.document.querySelector(".img-container img")
       h1 = window.document.querySelector(".userdata h1.title")
       cap = window.document.querySelector("meta[property$=description]")
